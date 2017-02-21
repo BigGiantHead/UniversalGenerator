@@ -9,7 +9,7 @@ namespace UniversalGenerator
     /// <summary>
     /// Singleton class that creates an instance from a type and fills the object's properties, not fields.
     /// Currently it can handle the following types:
-    /// short, int, long, ushort, uint, ulong, float, double, string, char, DateTime, TimeSpan, Color, Vector2, Vector3, Vector4, Quaternion.
+    /// short, int, long, ushort, uint, ulong, float, double, string, char, DateTime, TimeSpan.
     /// The class can be extended with new fill/generate/randomize functions.
     /// </summary>
     public class UniversalGenerator
@@ -57,39 +57,6 @@ namespace UniversalGenerator
             fillFunctions.Add(typeof(TimeSpan), UniversalGenerator_Functions.GenerateTimeSpan);
 
             fillFunctions.Add(typeof(Enum), UniversalGenerator_Functions.GenerateEnum);
-
-            //read from config
-            string[] keys = ConfigurationManager.AppSettings.AllKeys;
-            for (int i = 0; i < keys.Length; ++i)
-            {
-                try
-                {
-                    Type type = Type.GetType(keys[i]);
-
-                    string stringValue = ConfigurationManager.AppSettings[keys[i]];
-                    string[] splitValue = stringValue.Split(new char[1] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-                    string stringType = stringValue.Replace("." + splitValue[splitValue.Length - 1], "");
-                    string stringMethod = splitValue[splitValue.Length - 1];
-
-                    MethodInfo method = Type.GetType(stringType).GetMethod(stringMethod);
-                    GetRandomValue value = Delegate.CreateDelegate(typeof(GetRandomValue), method) as GetRandomValue;
-
-                    if (value != null && type != null)
-                    {
-                        if (fillFunctions.ContainsKey(type))
-                        {
-                            fillFunctions[type] = value;
-                        }
-                        else
-                        {
-                            fillFunctions.Add(type, value);
-                        }
-                    }
-                }
-                catch
-                {
-                }
-            }
         }
 
         /// <summary>
