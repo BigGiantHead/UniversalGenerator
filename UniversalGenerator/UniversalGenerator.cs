@@ -14,18 +14,23 @@ namespace UniversalGenerator
     /// </summary>
     public class UniversalGenerator
     {
+        private static readonly object padlock = new object();
+
         private static UniversalGenerator instance = null;
 
         public static UniversalGenerator Instance
         {
             get
             {
-                if (instance == null)
+                lock (padlock)
                 {
-                    instance = new UniversalGenerator();
-                }
+                    if (instance == null)
+                    {
+                        instance = new UniversalGenerator();
+                    }
 
-                return instance;
+                    return instance;
+                }
             }
         }
 
